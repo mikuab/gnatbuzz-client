@@ -1,0 +1,82 @@
+[
+    {
+        "value": 1,
+        "label": ".IO"
+    },
+    {
+        "value": 2,
+        "label": "2 Player"
+    },
+    {
+        "value": 3,
+        "label": "3D"
+    },
+    {
+        "value": 0,
+        "label": "Action"
+    },
+    {
+        "value": 4,
+        "label": "Adventure"
+    },
+    {
+        "value": 5,
+        "label": "Arcade"
+    },
+    {
+        "value": 19,
+        "label": "Baby Hazel"
+    },
+    {
+        "value": 6,
+        "label": "Bejeweled"
+    },
+    {
+        "value": 7,
+        "label": "Boys"
+    },
+    {
+        "value": 8,
+        "label": "Clicker"
+    },
+    {
+        "value": 9,
+        "label": "Cooking"
+    },
+    {
+        "value": 10,
+        "label": "Girls"
+    },
+    {
+        "value": 11,
+        "label": "Hypercasual"
+    },
+    {
+        "value": 12,
+        "label": "Multiplayer"
+    },
+    {
+        "value": 13,
+        "label": "Puzzle"
+    },
+    {
+        "value": 14,
+        "label": "Racing"
+    },
+    {
+        "value": 15,
+        "label": "Shooting"
+    },
+    {
+        "value": 16,
+        "label": "Soccer"
+    },
+    {
+        "value": 17,
+        "label": "Sports"
+    },
+    {
+        "value": 18,
+        "label": "Stickman"
+    }
+]
