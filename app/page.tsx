@@ -6,6 +6,19 @@ import Filter from "@/components/Filter";
 const sections = getGameSections();
 const categories = getCategories();
 
+export const metadata = {
+  title: "GnatBuzz - Free Online Games - Play Action, Puzzle & Arcade Games",
+  description:
+    "Play the best free online games. Action games, puzzle games, racing games and more. No download required.",
+  keywords: [
+    "free online games",
+    "no download games",
+    "action games",
+    "puzzle games",
+    "browser games"
+  ]
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#fdf7ee] text-slate-900">

@@ -10,6 +10,24 @@ import {
   getTagSlug,
 } from "@/lib/games";
 
+export async function generateMetadata({ params }: GamePageProps) {
+  const { id } = await params;
+  const game = getGameById(id);
+  if (!game) {
+    notFound();
+  }
+
+  return {
+    title: `${game.title} - Play Free Online`,
+    description: `${game.description} - ${game.tags}`,
+    openGraph: {
+      title: game.title,
+      description: game.description,
+      images: [game.thumb]
+    }
+  }
+}
+
 type GamePageProps = {
   params: Promise<{ id: string }>;
 };
