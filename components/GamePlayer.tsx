@@ -96,12 +96,11 @@ export function GamePlayer({ game }: GamePlayerProps) {
 
   if (isDesktop) {
     return (
-      <div className="relative max-h-[80vh] w-full overflow-hidden rounded-2xl bg-slate-800 shadow-lg md:rounded-xl">
+      <div className="relative flex h-full min-h-0 w-full items-center justify-center overflow-hidden rounded-2xl bg-slate-800 shadow-lg md:rounded-xl">
+        {/* 保持游戏宽高比，不匹配时在播放区内居中 */}
         <div
-          className="relative h-full w-full"
-          style={{
-            aspectRatio,
-          }}
+          className="relative w-full max-h-full shrink-0"
+          style={{ aspectRatio }}
         >
           <iframe
             key={`${game.id}-${reloadCount}`}

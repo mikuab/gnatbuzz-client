@@ -144,7 +144,7 @@ export function getGameById(id: string): Game | undefined {
 /**
  * 获取与当前游戏关联性高的推荐游戏（同分类 + 标签重叠）
  */
-export function getRelatedGames(game: Game, limit = 12): Game[] {
+export function getRelatedGames(game: Game, limit = 24): Game[] {
   const categoryLower = game.category?.toLowerCase().trim() ?? "";
   const tagSet = new Set(
     game.tags

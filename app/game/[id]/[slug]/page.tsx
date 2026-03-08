@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import { GamePlayer } from "@/components/GamePlayer";
 import { GameCard } from "@/components/GameCarousel";
@@ -96,55 +96,50 @@ export default async function GamePage({ params }: GamePageProps) {
   const game = getGameById(id);
 
   if (!game) {
-    notFound();
+    redirect("/");
   }
 
   const canonicalSlug = getGameSlug(game.title);
-  if (slug !== canonicalSlug) {
-    redirect(`/game/${id}/${canonicalSlug}`);
+  if (decodeURIComponent(slug) !== canonicalSlug) {
+    redirect("/");
   }
 
-  const related = getRelatedGames(game, 12);
+  const related = getRelatedGames(game, 24);
   const gameJsonLd = buildGameJsonLd(game, id, slug);
 
   return (
-    <div className="min-h-screen bg-[#fdf7ee] text-slate-900">
+    <div className="flex min-h-screen flex-col bg-[#fdf7ee] text-slate-900">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(gameJsonLd) }}
       />
       <Header categories={allCategories} />
-      <main className="mx-auto max-w-7xl px-4 pb-16 pt-4 md:pt-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-          <div className="min-w-0 space-y-4 md:space-y-5">
-            {/* PC 直接 iframe，移动端为缩略图 + Play Now */}
-            <GamePlayer game={game} />
-
-            <div className="space-y-2">
-              <h1 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
+      {/* PC：main 填满视口剩余高度，随窗口等比例变化；移动端保持自然流式布局 */}
+      <main className="mx-auto flex min-h-0 flex-1 flex-col px-4 pb-16 pt-4 md:pt-6 lg:h-[calc(100dvh-3.5rem)] lg:max-h-[calc(100dvh-3.5rem)] lg:min-h-0 lg:flex-none">
+        <div className="flex min-h-0 flex-1 flex-col gap-6 lg:grid lg:h-full lg:flex-none lg:grid-cols-[1fr_280px] lg:items-stretch lg:gap-6">
+          {/* 左侧：播放区 + 详情 */}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:min-h-0">
+            <div className="min-h-0 flex-1 lg:min-h-0">
+              <GamePlayer game={game} />
+            </div>
+            <div className="mt-4 flex shrink-0 flex-col justify-center lg:mt-3 lg:min-h-[5rem] lg:max-h-[7.5rem]">
+              <h1 className="line-clamp-2 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
                 {game.title}
               </h1>
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <span className="flex items-center gap-1">
-                  <span className="text-amber-500" aria-hidden>★</span>
-                  <span>4.2</span>
-                </span>
-              </div>
-              <p className="text-sm leading-relaxed text-slate-700 md:text-base">
+              <p className="line-clamp-2 text-sm leading-relaxed text-slate-700 md:line-clamp-3 md:text-base">
                 {game.description}
               </p>
+              {game.category && (
+                <p className="mt-1 shrink-0 text-xs text-slate-500 md:text-sm">
+                  More From {game.category}
+                </p>
+              )}
             </div>
-
-            {game.category && (
-              <p className="text-xs text-slate-500 md:text-sm">
-                More From {game.category}
-              </p>
-            )}
           </div>
 
-          {/* 右侧关联游戏推荐（PC） */}
-          <aside className="hidden lg:block">
-            <div className="space-y-3">
+          {/* 右侧：Tags + 推荐（PC），内容多时可滚动 */}
+          <aside className="hidden min-h-0 lg:block lg:w-[280px] lg:shrink-0">
+            <div className="space-y-3 pr-1">
               <div>
                 <h2 className="mb-2 text-base font-semibold text-slate-900">
                   Tags
@@ -174,7 +169,7 @@ export default async function GamePage({ params }: GamePageProps) {
                   Related Games
                 </h2>
                 <div className="grid grid-cols-2 gap-2">
-                  {related.slice(0, 10).map((g) => (
+                  {related.map((g) => (
                     <GameCard key={g.id} game={g} />
                   ))}
                 </div>
