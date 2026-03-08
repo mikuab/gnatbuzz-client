@@ -1,20 +1,12 @@
 import type { MetadataRoute } from "next";
 import {
   allGames,
+  allCategories,
   getCategorySlug,
   getTagSlug,
-  getTopCategories,
+  getGameSlug,
 } from "@/lib/games";
-
-function getBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return "https://example.com";
-}
+import { getBaseUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getBaseUrl();
@@ -25,13 +17,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const gameRoutes: MetadataRoute.Sitemap = allGames.map((game) => ({
-    url: `${baseUrl}/game/${game.id}`,
+    url: `${baseUrl}/game/${game.id}/${getGameSlug(game.title)}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
-  const categorySlugs = getTopCategories(50).map((name) => getCategorySlug(name));
+  const categorySlugs = allCategories.map((name) => getCategorySlug(name));
   const categoryRoutes: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
     url: `${baseUrl}/category/${slug}`,
     lastModified: new Date(),

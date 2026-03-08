@@ -3,9 +3,8 @@ import Filter from "@/components/Filter";
 import { GameGrid } from "@/components/GameGrid";
 import {
   allGames,
-  getCategories,
+  allCategories,
   getCategorySlug,
-  type Category,
 } from "@/lib/games";
 
 type CategoryPageProps = {
@@ -16,15 +15,14 @@ type CategoryPageProps = {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const categories = getCategories();
-  const category = findCategoryBySlug(categories, slug);
+  const category = findCategoryBySlug(allCategories, slug);
 
-  const title = category ? `${category.label} games` : "Games";
-  const subtitle = category ? `Category: ${category.label}` : "";
+  const title = category ? `${category} games` : "Games";
+  const subtitle = category ? `Category: ${category}` : "";
 
   const games = allGames.filter((game) => {
     if (category) {
-      const target = category.label.toLowerCase();
+      const target = category.toLowerCase();
       return game.category.toLowerCase().includes(target);
     }
 
@@ -34,9 +32,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className="min-h-screen bg-[#fdf7ee] text-slate-900">
-      <Header categories={categories} />
+      <Header categories={allCategories} />
       <main className="mx-auto flex w-full flex-col gap-4 px-4 pb-16 pt-4 md:gap-8 md:pt-6">
-        <Filter categories={categories} />
+        <Filter categories={allCategories} />
 
         <section className="space-y-4 md:space-y-6">
           <header className="space-y-1">
@@ -62,17 +60,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   );
 }
 
-function findCategoryBySlug(categories: Category[], slug: string) {
+function findCategoryBySlug(categories: string[], slug: string) {
   return categories.find(
-    (category) => getCategorySlug(category.label) === slug,
+    (category) => getCategorySlug(category) === slug,
   );
 }
-
-export function generateStaticParams() {
-  const categories = getCategories();
-
-  return categories.map((category) => ({
-    slug: getCategorySlug(category.label),
-  }));
-}
-

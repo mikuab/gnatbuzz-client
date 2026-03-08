@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Filter from "@/components/Filter";
 import { GameGrid } from "@/components/GameGrid";
-import { allGames, getCategories } from "@/lib/games";
+import { allGames, allCategories } from "@/lib/games";
 
 type BrowsePageProps = {
   searchParams: Promise<{
@@ -13,7 +13,6 @@ type BrowsePageProps = {
 
 export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const params = await searchParams;
-  const categories = getCategories();
 
   const query = params.q?.trim() ?? "";
   const tag = params.tag?.trim() ?? "";
@@ -29,9 +28,9 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
   return (
     <div className="min-h-screen bg-[#fdf7ee] text-slate-900">
-      <Header categories={categories} />
+      <Header categories={allCategories} />
       <main className="mx-auto flex w-full flex-col gap-4 px-4 pb-16 pt-4 md:gap-8 md:pt-6">
-        <Filter categories={categories} />
+        <Filter categories={allCategories} />
 
         <section className="space-y-4 md:space-y-6">
           <header className="space-y-1">

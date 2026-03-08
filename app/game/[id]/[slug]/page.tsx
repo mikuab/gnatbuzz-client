@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Header from "@/components/Header";
 import { GamePlayer } from "@/components/GamePlayer";
 import { GameCard } from "@/components/GameCarousel";
@@ -6,46 +6,114 @@ import Link from "next/link";
 import {
   getGameById,
   getRelatedGames,
-  getCategories,
+  allCategories,
   getTagSlug,
+  getGameSlug,
 } from "@/lib/games";
+import { getBaseUrl } from "@/lib/site";
+import type { Game } from "@/lib/games";
+
+const META_DESCRIPTION_MAX_LENGTH = 155;
+
+function truncateDescription(text: string, maxLen: number = META_DESCRIPTION_MAX_LENGTH): string {
+  const trimmed = text.trim();
+  if (trimmed.length <= maxLen) return trimmed;
+  return trimmed.slice(0, maxLen - 3).trim() + "...";
+}
+
+function buildGameJsonLd(game: Game, id: string, slug: string): Record<string, unknown> {
+  const baseUrl = getBaseUrl();
+  const url = `${baseUrl}/game/${id}/${slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "@id": url,
+    name: game.title,
+    description: game.description,
+    url,
+    applicationCategory: "Game",
+    image: game.thumb,
+    screenshot: game.thumb,
+    ...(game.category && { genre: game.category }),
+    ...(game.tags && {
+      keywords: game.tags.split(",").map((t) => t.trim()).filter(Boolean),
+    }),
+  };
+}
 
 export async function generateMetadata({ params }: GamePageProps) {
-  const { id } = await params;
+  const { id, slug } = await params;
   const game = getGameById(id);
-  if (!game) {
-    notFound();
+  if (!game || getGameSlug(game.title) !== slug) {
+    return {};
   }
+
+  const canonicalPath = `/game/${id}/${slug}`;
+  const description = truncateDescription(
+    [game.description, game.tags].filter(Boolean).join(" · ") || game.title
+  );
 
   return {
     title: `${game.title} - Play Free Online`,
-    description: `${game.description} - ${game.tags}`,
+    description,
+    alternates: { canonical: canonicalPath },
     openGraph: {
-      title: game.title,
-      description: game.description,
-      images: [game.thumb]
-    }
-  }
+      type: "website",
+      url: canonicalPath,
+      title: `${game.title} - Play Free Online`,
+      description,
+      siteName: "GnatBuzz",
+      images: [
+        {
+          url: game.thumb,
+          width: game.width,
+          height: game.height,
+          alt: game.title,
+        },
+      ],
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${game.title} - Play Free Online`,
+      description,
+      images: [game.thumb],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
+  };
 }
 
 type GamePageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; slug: string }>;
 };
 
 export default async function GamePage({ params }: GamePageProps) {
-  const { id } = await params;
+  const { id, slug } = await params;
   const game = getGameById(id);
 
   if (!game) {
     notFound();
   }
 
-  const categories = getCategories();
+  const canonicalSlug = getGameSlug(game.title);
+  if (slug !== canonicalSlug) {
+    redirect(`/game/${id}/${canonicalSlug}`);
+  }
+
   const related = getRelatedGames(game, 12);
+  const gameJsonLd = buildGameJsonLd(game, id, slug);
 
   return (
     <div className="min-h-screen bg-[#fdf7ee] text-slate-900">
-      <Header categories={categories} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(gameJsonLd) }}
+      />
+      <Header categories={allCategories} />
       <main className="mx-auto max-w-7xl px-4 pb-16 pt-4 md:pt-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
           <div className="min-w-0 space-y-4 md:space-y-5">

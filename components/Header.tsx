@@ -4,10 +4,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Filter from "./Filter";
-import type { Category } from "@/lib/games";
 
 type HeaderProps = {
-  categories: Category[];
+  categories: string[];
 };
 
 export default function Header({ categories }: HeaderProps) {

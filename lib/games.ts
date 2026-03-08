@@ -1,10 +1,4 @@
 import gamesData from "../public/data/games.json";
-import categoriesData from "../public/data/categories.json";
-
-export type Category = {
-  value: number;
-  label: string;
-};
 
 export type Game = {
   id: string;
@@ -15,8 +9,9 @@ export type Game = {
   category: string;
   tags: string;
   thumb: string;
-  width: string;
-  height: string;
+  width: number;
+  height: number;
+  supports_mobile: boolean;
 };
 
 export type GameSectionKind = "popular" | "newest" | "category";
@@ -38,83 +33,29 @@ export type GameSectionConfig = {
 };
 
 const allGames: Game[] = gamesData as Game[];
+const allCategories: string[] = getCategories();
 
-const defaultSectionConfigs: GameSectionConfig[] = [
-  {
-    id: "popular",
-    title: "Popular games",
-    kind: "popular",
-    limit: 30,
-  },
+export function getGameSections(): GameSection[] {
+  const maxLimit = 30;
+  const categorySections = allCategories.map((category) => ({
+    id: category,
+    title: `${category} games`,
+    kind: "category",
+    categoryName: category,
+    limit: maxLimit,
+    games: allGames.filter((game) => game.category === category),
+  }));
+  const sortedByIdDesc = [...allGames].sort(
+    (a, b) => Number(b.id) - Number(a.id),
+  );
+  return [
   {
     id: "new",
     title: "New games",
     kind: "newest",
-    limit: 30,
-  },
-  {
-    id: "action",
-    title: "Action games",
-    kind: "category",
-    categoryName: "Action",
-    limit: 30,
-  },
-  {
-    id: "puzzles",
-    title: "Puzzle games",
-    kind: "category",
-    categoryName: "Puzzles",
-    limit: 30,
-  },
-];
-
-export function getGameSections(
-  configs: GameSectionConfig[] = defaultSectionConfigs,
-): GameSection[] {
-  return configs
-    .map((config) => buildSection(config))
-    .filter((section): section is GameSection => section.games.length > 0);
-}
-
-function buildSection(config: GameSectionConfig): GameSection {
-  const limit = config.limit ?? 15;
-
-  if (config.kind === "popular") {
-    return {
-      id: config.id,
-      title: config.title,
-      games: allGames.slice(0, limit),
-      kind: config.kind,
-    };
-  }
-
-  if (config.kind === "newest") {
-    const sortedByIdDesc = [...allGames].sort(
-      (a, b) => Number(b.id) - Number(a.id),
-    );
-
-    return {
-      id: config.id,
-      title: config.title,
-      games: sortedByIdDesc.slice(0, limit),
-      kind: config.kind,
-    };
-  }
-
-  const categoryName = config.categoryName?.toLowerCase().trim();
-
-  const byCategory = allGames.filter((game) => {
-    if (!categoryName) return false;
-    return game.category.toLowerCase().includes(categoryName);
-  });
-
-  return {
-    id: config.id,
-    title: config.title,
-    games: byCategory.slice(0, limit),
-    kind: config.kind,
-    categoryName: config.categoryName,
-  };
+    limit: maxLimit,
+    games: sortedByIdDesc.slice(0, maxLimit),
+  }, ...categorySections] as GameSection[];
 }
 
 export function getCategorySlug(name: string): string {
@@ -123,6 +64,16 @@ export function getCategorySlug(name: string): string {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
+}
+
+/** 游戏标题转 URL slug：全小写，空格替换为 - */
+export function getGameSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 /** 标签转 URL slug，与 getCategorySlug 规则一致 */
@@ -174,8 +125,16 @@ export function getTopCategories(limit = 16): string[] {
     .map(([name]) => name);
 }
 
-export function getCategories(): Category[] {
-  return categoriesData as Category[];
+function getCategories(): string[] {
+  const categories = new Map<string, number>();
+  for (const game of allGames) {
+    if (game.category) {
+      categories.set(game.category, (categories.get(game.category) ?? 0) + 1);
+    }
+  }
+  return Array.from(categories.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([name]) => name);
 }
 
 export function getGameById(id: string): Game | undefined {
@@ -217,5 +176,5 @@ export function getRelatedGames(game: Game, limit = 12): Game[] {
   return scored.slice(0, limit).map((x) => x.game);
 }
 
-export { allGames };
+export { allGames, allCategories };
 

@@ -9,7 +9,7 @@ import {
   type CSSProperties,
 } from "react";
 import type { Game, GameSection } from "../lib/games";
-import { getCategorySlug } from "@/lib/games";
+import { getCategorySlug, getGameSlug } from "@/lib/games";
 
 type GameCarouselProps = {
   section: GameSection;
@@ -132,7 +132,7 @@ export type GameCardProps = {
 export function GameCard({ game, style }: GameCardProps) {
   return (
     <Link
-      href={`/game/${game.id}`}
+      href={`/game/${game.id}/${getGameSlug(game.title)}`}
       className="group block"
       style={style}
     >

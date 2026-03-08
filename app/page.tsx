@@ -1,10 +1,9 @@
 import Header from "../components/Header";
 import { GameCarousel } from "../components/GameCarousel";
-import { getCategories, getGameSections } from "@/lib/games";
+import { allCategories, getGameSections } from "@/lib/games";
 import Filter from "@/components/Filter";
 
 const sections = getGameSections();
-const categories = getCategories();
 
 export const metadata = {
   title: "GnatBuzz - Free Online Games - Play Action, Puzzle & Arcade Games",
@@ -22,9 +21,9 @@ export const metadata = {
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#fdf7ee] text-slate-900">
-      <Header categories={categories} />
+      <Header categories={allCategories} />
       <main className="mx-auto flex w-full flex-col gap-4 px-4 pb-16 pt-4 md:gap-8 md:pt-6">
-        <Filter categories={categories} />
+        <Filter categories={allCategories} />
         <section aria-label="Game sections" className="space-y-2 md:space-y-6">
           {sections.map((section) => (
             <GameCarousel key={section.id} section={section} />

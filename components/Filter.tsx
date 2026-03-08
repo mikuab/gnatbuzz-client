@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Category, getCategorySlug } from "@/lib/games";
+import { getCategorySlug } from "@/lib/games";
 
 type FilterChipProps = {
   label: string;
@@ -34,7 +34,7 @@ function FilterChip({ label, icon, href }: FilterChipProps) {
 }
 
 type FilterProps = {
-  categories: Category[];
+  categories: string[];
   variant?: "desktop" | "mobile";
 };
 
@@ -43,13 +43,13 @@ export default function Filter({ categories, variant = "desktop" }: FilterProps)
     <section aria-label="Game filters" className={variant === "mobile" ? "space-y-4 md:hidden" : "hidden md:block"}>
       <div className="flex flex-wrap gap-3">
         <FilterChip label="New" icon="icon-new" href="/browse?sort=newest" />
-        <FilterChip label="Popular" icon="icon-icon_Popular" href="/browse?sort=popular" />
+        {/* <FilterChip label="Popular" icon="icon-icon_Popular" href="/browse?sort=popular" /> */}
         {categories.map((category) => {
-          const slug = getCategorySlug(category.label);
+          const slug = getCategorySlug(category);
           return (
             <FilterChip
-              key={category.value}
-              label={category.label}
+              key={category}
+              label={category}
               href={`/category/${slug}`}
             />
           );

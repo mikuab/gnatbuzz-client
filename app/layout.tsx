@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { getBaseUrl } from "@/lib/site";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(getBaseUrl()),
   title: "Free Online Games - GnatBuzz",
   description: "Play the best free online games including action, puzzle and more.",
 };
