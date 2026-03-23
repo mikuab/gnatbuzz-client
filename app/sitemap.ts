@@ -17,7 +17,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const gameRoutes: MetadataRoute.Sitemap = allGames.map((game) => ({
-    url: `${baseUrl}/game/${game.id}/${getGameSlug(game.title)}`,
+    url: `${baseUrl}/game/${encodeURIComponent(game.id)}/${encodeURIComponent(
+      getGameSlug(game.title),
+    )}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
@@ -25,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const categorySlugs = allCategories.map((name) => getCategorySlug(name));
   const categoryRoutes: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
-    url: `${baseUrl}/category/${slug}`,
+    url: `${baseUrl}/category/${encodeURIComponent(slug)}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
@@ -37,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const t of tags) tagSlugSet.add(getTagSlug(t));
   }
   const tagRoutes: MetadataRoute.Sitemap = [...tagSlugSet].map((slug) => ({
-    url: `${baseUrl}/tag/${slug}`,
+    url: `${baseUrl}/tag/${encodeURIComponent(slug)}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.6,
