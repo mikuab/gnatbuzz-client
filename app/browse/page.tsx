@@ -76,6 +76,13 @@ function getFilteredGames(options: FilterOptions) {
   } else if (sort === "popular") {
     games = games;
     title = "Popular games";
+  } else if (sort === "featured") {
+    games = games.filter((game) => game.is_featured).sort(
+      (a, b) =>
+        new Date(b.featured_at ?? 0).getTime() -
+        new Date(a.featured_at ?? 0).getTime(),
+    );
+    title = "Featured games";
   }
 
   if (tag) {
@@ -105,6 +112,8 @@ function getFilteredGames(options: FilterOptions) {
     subtitle = "Newest games first";
   } else if (sort === "popular") {
     subtitle = "Most popular games";
+  } else if (sort === "featured") {
+    subtitle = "Featured games first";
   }
 
   return { filteredGames: games, title, subtitle };

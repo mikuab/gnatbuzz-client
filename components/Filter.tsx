@@ -42,6 +42,7 @@ export default function Filter({ categories, variant = "desktop" }: FilterProps)
   return (
     <section aria-label="Game filters" className={variant === "mobile" ? "space-y-4 md:hidden" : "hidden md:block"}>
       <div className="flex flex-wrap gap-3">
+        <FilterChip label="Featured" icon="icon-icon_Popular" href="/browse?sort=featured" />
         <FilterChip label="New" icon="icon-new" href="/browse?sort=newest" />
         {/* <FilterChip label="Popular" icon="icon-icon_Popular" href="/browse?sort=popular" /> */}
         {categories.map((category) => {

@@ -12,9 +12,11 @@ export type Game = {
   width: number;
   height: number;
   supports_mobile: boolean;
+  is_featured?: boolean;
+  featured_at?: string;
 };
 
-export type GameSectionKind = "popular" | "newest" | "category";
+export type GameSectionKind = "popular" | "featured" | "newest" | "category";
 
 export type GameSection = {
   id: string;
@@ -37,6 +39,13 @@ const allCategories: string[] = getCategories();
 
 export function getGameSections(): GameSection[] {
   const maxLimit = 30;
+  const featuredGames = allGames
+    .filter((game) => game.is_featured)
+    .sort(
+      (a, b) =>
+        new Date(b.featured_at ?? 0).getTime() -
+        new Date(a.featured_at ?? 0).getTime(),
+    );
   const categorySections = allCategories.map((category) => ({
     id: category,
     title: `${category} games`,
@@ -49,6 +58,13 @@ export function getGameSections(): GameSection[] {
     (a, b) => Number(b.id) - Number(a.id),
   );
   return [
+  {
+    id: "featured",
+    title: "Featured games",
+    kind: "featured",
+    limit: maxLimit,
+    games: featuredGames.slice(0, maxLimit),
+  },
   {
     id: "new",
     title: "New games",
